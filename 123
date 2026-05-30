@@ -1,0 +1,72 @@
+import React from 'react'; import ReactDOM from 'react-dom/client'; import App from './App'; ReactDOM.createRoot(document.getElementById('root')).render(<React.StrictMode><App /></React.StrictMode>);
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-slate-950 text-white p-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-gradient-to-r from-slate-900 to-lime-900 rounded-3xl p-8 shadow-2xl">
+          <h1 className="text-4xl font-black">🎾 寶亮匹克球學員系統</h1>
+          <p className="text-slate-300 mt-3">查詢堂數、班級資訊與課程公告</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5 mt-6">
+          <div className="bg-slate-900 rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">📚 常態班</h2>
+            <select className="w-full bg-slate-800 rounded-2xl p-4 mb-4">
+              <option>週六成人班</option>
+              <option>週六國小班</option>
+              <option>週日班</option>
+            </select>
+            <select className="w-full bg-slate-800 rounded-2xl p-4">
+              <option>健○</option>
+              <option>水○</option>
+              <option>小○</option>
+            </select>
+          </div>
+
+          <div className="bg-slate-900 rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">🏓 專班</h2>
+            <select className="w-full bg-slate-800 rounded-2xl p-4 mb-4">
+              <option>醫生班</option>
+              <option>水電班</option>
+              <option>會計師班</option>
+            </select>
+            <select className="w-full bg-slate-800 rounded-2xl p-4">
+              <option>學員A</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 rounded-3xl p-6 mt-6">
+          <h2 className="text-2xl font-bold mb-4">🎟️ 學員資訊</h2>
+
+          <div className="grid md:grid-cols-4 gap-4">
+            <div className="bg-slate-800 rounded-2xl p-4">
+              <div className="text-slate-400 text-sm">方案</div>
+              <div className="text-xl font-bold mt-1">新方案</div>
+            </div>
+
+            <div className="bg-slate-800 rounded-2xl p-4">
+              <div className="text-slate-400 text-sm">已使用</div>
+              <div className="text-xl font-bold mt-1">2堂</div>
+            </div>
+
+            <div className="bg-lime-300 text-slate-950 rounded-2xl p-4">
+              <div className="text-sm">剩餘堂數</div>
+              <div className="text-2xl font-black mt-1">3堂</div>
+            </div>
+
+            <div className="bg-slate-800 rounded-2xl p-4">
+              <div className="text-slate-400 text-sm">期限</div>
+              <div className="text-xl font-bold mt-1">6週內</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>寶亮匹克球學員系統</title><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-slate-950"><div id="root"></div><script type="module" src="/src/main.jsx"></script></body></html>
+{"name":"baoliang-pickleball-system","private":true,"version":"0.0.1","type":"module","scripts":{"dev":"vite","build":"vite build","preview":"vite preview"},"dependencies":{"react":"^18.2.0","react-dom":"^18.2.0"},"devDependencies":{"@vitejs/plugin-react":"^4.2.1","vite":"^5.2.0"}}
+# 寶亮匹克球學員系統\n\nnpm install\nnpm run dev
