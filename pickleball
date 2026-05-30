@@ -1,0 +1,463 @@
+import React, { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { CalendarDays, Ticket, Megaphone, ClipboardList, MapPin, Clock, User, CheckCircle2, Info, Search, Users } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const classGroups = {
+  regular: {
+    label: "常態班",
+    description: "週六成人班、週六國小班、週日班等固定訓練課程",
+    classes: ["週六成人班", "週六國小班", "週日班"],
+  },
+  private: {
+    label: "專班",
+    description: "醫生班、水電班、會計師班、一對一專班等客製化課程",
+    classes: ["醫生班", "水電班", "會計師班", "一對一專班"],
+  },
+};
+
+const students = [
+  {
+    name: "健偉",
+    displayName: "健○",
+    group: "regular",
+    className: "週六成人班",
+    plan: "舊方案｜6堂課制",
+    totalLessons: 6,
+    usedLessons: 3,
+    records: ["2026/04/25", "2026/05/02", "2026/05/16"],
+    deadline: "舊生方案依原規則",
+  },
+  {
+    name: "水龍",
+    displayName: "水○",
+    group: "regular",
+    className: "週六成人班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 2,
+    records: ["2026/05/16", "2026/05/23"],
+    deadline: "開課後6週內完成",
+  },
+  {
+    name: "子烈",
+    displayName: "子○",
+    group: "regular",
+    className: "週六成人班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 2,
+    records: ["2026/05/16", "2026/05/23"],
+    deadline: "開課後6週內完成",
+  },
+  {
+    name: "驛雯",
+    displayName: "驛○",
+    group: "regular",
+    className: "週六成人班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 2,
+    records: ["2026/05/16", "2026/05/23"],
+    deadline: "開課後6週內完成",
+  },
+  {
+    name: "廣宇",
+    displayName: "廣○",
+    group: "regular",
+    className: "週六成人班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 1,
+    records: ["2026/05/23"],
+    deadline: "開課後6週內完成",
+  },
+  {
+    name: "宇威",
+    displayName: "宇○",
+    group: "regular",
+    className: "週六國小班",
+    plan: "舊方案｜6堂課制",
+    totalLessons: 6,
+    usedLessons: 0,
+    records: [],
+    deadline: "舊生方案依原規則",
+  },
+  {
+    name: "昱嘉",
+    displayName: "昱○",
+    group: "regular",
+    className: "週六國小班",
+    plan: "舊方案｜6堂課制",
+    totalLessons: 6,
+    usedLessons: 3,
+    records: ["2026/03/07", "2026/03/14", "2026/03/28"],
+    deadline: "舊生方案依原規則",
+  },
+  {
+    name: "品嘉",
+    displayName: "品○",
+    group: "regular",
+    className: "週六國小班",
+    plan: "舊方案｜6堂課制",
+    totalLessons: 6,
+    usedLessons: 3,
+    records: ["2026/03/07", "2026/03/14", "2026/03/28"],
+    deadline: "舊生方案依原規則",
+  },
+  {
+    name: "佑鑫",
+    displayName: "佑○",
+    group: "regular",
+    className: "週六國小班",
+    plan: "舊方案｜6堂課制",
+    totalLessons: 6,
+    usedLessons: 5,
+    records: ["2026/03/07", "2026/03/14", "2026/03/28", "2026/04/25", "2026/05/23"],
+    deadline: "舊生方案依原規則",
+  },
+  {
+    name: "沛賱",
+    displayName: "沛○",
+    group: "regular",
+    className: "週六國小班",
+    plan: "舊方案｜6堂課制",
+    totalLessons: 6,
+    usedLessons: 5,
+    records: ["2026/04/11", "2026/04/25", "2026/05/09", "2026/05/16", "2026/05/23"],
+    deadline: "舊生方案依原規則",
+  },
+  {
+    name: "小手",
+    displayName: "小○",
+    group: "regular",
+    className: "週六國小班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 3,
+    records: ["2026/05/02", "2026/05/09", "2026/05/16"],
+    deadline: "開課後6週內完成",
+  },
+  {
+    name: "希希",
+    displayName: "希○",
+    group: "regular",
+    className: "週六國小班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 3,
+    records: ["2026/05/02", "2026/05/09", "2026/05/16"],
+    deadline: "開課後6週內完成",
+  },
+  {
+    name: "醫生班學員A",
+    displayName: "醫生班學員A",
+    group: "private",
+    className: "醫生班",
+    plan: "舊方案｜6堂課制",
+    totalLessons: 6,
+    usedLessons: 5,
+    records: ["第1堂", "第2堂", "第3堂", "第4堂", "第5堂"],
+    deadline: "舊生方案依原規則",
+  },
+  {
+    name: "水電班學員A",
+    displayName: "水電班學員A",
+    group: "private",
+    className: "水電班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 2,
+    records: ["第1堂", "第2堂"],
+    deadline: "開課後6週內完成",
+  },
+  {
+    name: "週日班學員A",
+    displayName: "週日班學員A",
+    group: "regular",
+    className: "週日班",
+    plan: "新方案｜5堂課制",
+    totalLessons: 5,
+    usedLessons: 0,
+    records: [],
+    deadline: "尚未開課",
+  },
+  {
+    name: "一對一學員A",
+    displayName: "一對一學員A",
+    group: "private",
+    className: "一對一專班",
+    plan: "一對一｜3堂一期",
+    totalLessons: 3,
+    usedLessons: 0,
+    records: [],
+    deadline: "尚未開課",
+  },
+];
+
+const availableClasses = [
+  { title: "週六成人班", time: "週六 14:00－16:00", location: "信義羽球館", enrolled: 4, capacity: 8 },
+  { title: "週六國小班", time: "週六 16:00－18:00", location: "信義羽球館", enrolled: 6, capacity: 8 },
+  { title: "週日班", time: "週日 10:00－12:00", location: "信義羽球館", enrolled: 4, capacity: 8 },
+];
+
+const notices = [
+  "本週課程正常上課，請穿著運動鞋並自備水。",
+  "新方案為5堂課制，需於開課後6週內完成。",
+  "課程採每週報名制，額滿依報名順序為準。",
+];
+
+export default function BaoliangPickleballStudentPortal() {
+  const [selectedGroup, setSelectedGroup] = useState("regular");
+  const [selectedClass, setSelectedClass] = useState(classGroups.regular.classes[0]);
+  const [selectedStudentName, setSelectedStudentName] = useState("");
+
+  const classes = classGroups[selectedGroup as keyof typeof classGroups].classes;
+
+  const filteredStudents = useMemo(() => {
+    return students.filter(
+      (student) => student.group === selectedGroup && student.className === selectedClass
+    );
+  }, [selectedGroup, selectedClass]);
+
+  const selectedStudent = useMemo(() => {
+    return filteredStudents.find((student) => student.name === selectedStudentName) || filteredStudents[0];
+  }, [filteredStudents, selectedStudentName]);
+
+  const remainingLessons = selectedStudent.totalLessons - selectedStudent.usedLessons;
+  const progress = Math.round((selectedStudent.usedLessons / selectedStudent.totalLessons) * 100);
+
+  const handleGroupChange = (group: string) => {
+    setSelectedGroup(group);
+    const firstClass = classGroups[group as keyof typeof classGroups].classes[0];
+    setSelectedClass(firstClass);
+    const firstStudent = students.find((student) => student.group === group && student.className === firstClass);
+    setSelectedStudentName(firstStudent?.name || "");
+  };
+
+  const handleClassChange = (className: string) => {
+    setSelectedClass(className);
+    const firstStudent = students.find((student) => student.group === selectedGroup && student.className === className);
+    setSelectedStudentName(firstStudent?.name || "");
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white">
+      <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-6 overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-900 via-slate-900 to-lime-900/50 p-6 shadow-2xl md:p-8"
+        >
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-lime-400/10 px-4 py-2 text-sm text-lime-300 ring-1 ring-lime-400/30">
+            <Ticket size={16} /> 寶亮 Pickleball Club
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight md:text-5xl">學員課程查詢系統</h1>
+          <p className="mt-3 max-w-2xl text-slate-300">
+            請先選擇班級類型，再選擇班級與姓名，即可查看剩餘堂數、上課紀錄與課程規則。
+          </p>
+        </motion.div>
+
+        <Card className="mb-5 rounded-3xl border-white/10 bg-white/10 text-white shadow-xl backdrop-blur">
+          <CardContent className="p-6">
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+              <Search className="text-lime-300" /> 查詢學員資料
+            </h2>
+
+            <div className="mb-5 grid gap-4 md:grid-cols-2">
+              {Object.entries(classGroups).map(([key, group]) => (
+                <button
+                  key={key}
+                  onClick={() => handleGroupChange(key)}
+                  className={`rounded-3xl border p-5 text-left transition ${
+                    selectedGroup === key
+                      ? "border-lime-300 bg-lime-300 text-slate-950"
+                      : "border-white/10 bg-slate-900/70 hover:border-lime-300/60"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 text-xl font-black">
+                    <Users size={22} /> {group.label}
+                  </div>
+                  <p className={`mt-2 text-sm ${selectedGroup === key ? "text-slate-700" : "text-slate-300"}`}>
+                    {group.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block">
+                <span className="mb-2 block text-sm text-slate-300">選擇班級</span>
+                <select
+                  value={selectedClass}
+                  onChange={(event) => handleClassChange(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-900 p-4 text-white outline-none ring-lime-300 focus:ring-2"
+                >
+                  {classes.map((className) => (
+                    <option key={className} value={className}>{className}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm text-slate-300">選擇學員</span>
+                <select
+                  value={selectedStudent?.name || ""}
+                  onChange={(event) => setSelectedStudentName(event.target.value)}
+                  className="w-full rounded-2xl border border-white/10 bg-slate-900 p-4 text-white outline-none ring-lime-300 focus:ring-2"
+                >
+                  {filteredStudents.map((student) => (
+                    <option key={student.name} value={student.name}>{student.displayName}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </CardContent>
+        </Card>
+
+        {selectedStudent && (
+          <div className="grid gap-5 md:grid-cols-3">
+            <Card className="rounded-3xl border-white/10 bg-white/10 text-white shadow-xl backdrop-blur md:col-span-2">
+              <CardContent className="p-6">
+                <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h2 className="flex items-center gap-2 text-xl font-bold">
+                      <Ticket className="text-lime-300" /> {selectedStudent.displayName}｜{selectedStudent.className}
+                    </h2>
+                    <p className="mt-1 text-sm text-slate-300">{selectedStudent.plan}</p>
+                  </div>
+                  <span className="w-fit rounded-full bg-lime-300 px-3 py-1 text-sm font-bold text-slate-950">
+                    剩餘 {remainingLessons} 堂
+                  </span>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-4">
+                  <InfoCard label="總堂數" value={`${selectedStudent.totalLessons} 堂`} />
+                  <InfoCard label="已使用" value={`${selectedStudent.usedLessons} 堂`} />
+                  <InfoCard label="剩餘" value={`${remainingLessons} 堂`} highlight />
+                  <InfoCard label="期限" value={selectedStudent.deadline} />
+                </div>
+
+                <div className="mt-6">
+                  <div className="mb-2 flex justify-between text-sm text-slate-300">
+                    <span>使用進度</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <div className="h-3 overflow-hidden rounded-full bg-slate-800">
+                    <div className="h-full rounded-full bg-lime-300" style={{ width: `${progress}%` }} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl border-white/10 bg-white/10 text-white shadow-xl backdrop-blur">
+              <CardContent className="p-6">
+                <h2 className="flex items-center gap-2 text-xl font-bold">
+                  <Megaphone className="text-lime-300" /> 最新公告
+                </h2>
+                <div className="mt-4 space-y-3">
+                  {notices.map((notice, index) => (
+                    <div key={index} className="rounded-2xl bg-slate-900/70 p-4 text-sm text-slate-200">
+                      {notice}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        <div className="mt-5 grid gap-5 lg:grid-cols-3">
+          <Card className="rounded-3xl border-white/10 bg-white/10 text-white shadow-xl backdrop-blur lg:col-span-2">
+            <CardContent className="p-6">
+              <h2 className="mb-5 flex items-center gap-2 text-xl font-bold">
+                <CalendarDays className="text-lime-300" /> 本週課程資訊
+              </h2>
+              <div className="space-y-4">
+                {availableClasses.map((item) => (
+                  <div key={item.title} className="rounded-3xl border border-white/10 bg-slate-900/70 p-5">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold">{item.title}</h3>
+                        <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-300">
+                          <span className="flex items-center gap-1"><Clock size={15} /> {item.time}</span>
+                          <span className="flex items-center gap-1"><MapPin size={15} /> {item.location}</span>
+                          <span className="flex items-center gap-1"><User size={15} /> {item.enrolled}/{item.capacity} 人</span>
+                        </div>
+                      </div>
+                      <Button className="rounded-2xl bg-lime-300 px-6 py-5 font-bold text-slate-950 hover:bg-lime-200">
+                        查看報名資訊
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-3xl border-white/10 bg-white/10 text-white shadow-xl backdrop-blur">
+            <CardContent className="p-6">
+              <h2 className="mb-5 flex items-center gap-2 text-xl font-bold">
+                <ClipboardList className="text-lime-300" /> 上課紀錄
+              </h2>
+              <div className="space-y-3">
+                {selectedStudent.records.length > 0 ? (
+                  selectedStudent.records.map((date, index) => (
+                    <div key={index} className="rounded-2xl bg-slate-900/70 p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-bold">{selectedStudent.className}</div>
+                          <div className="mt-1 text-sm text-slate-300">{date}</div>
+                        </div>
+                        <CheckCircle2 className="text-lime-300" />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-2xl bg-slate-900/70 p-4 text-sm text-slate-300">
+                    目前尚無上課紀錄
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="mt-5 rounded-3xl border-white/10 bg-white/10 text-white shadow-xl backdrop-blur">
+          <CardContent className="p-6">
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+              <Info className="text-lime-300" /> 團體班課程規則
+            </h2>
+            <div className="grid gap-3 md:grid-cols-5">
+              <RuleItem text="5堂課制" />
+              <RuleItem text="6週內完成" />
+              <RuleItem text="每週採報名制" />
+              <RuleItem text="額滿依報名順序" />
+              <RuleItem text="逾期不順延" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function InfoCard({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-3xl p-4 ${highlight ? "bg-lime-300 text-slate-950" : "bg-slate-900/70"}`}>
+      <div className={`text-sm ${highlight ? "text-slate-700" : "text-slate-400"}`}>{label}</div>
+      <div className="mt-1 text-xl font-black">{value}</div>
+    </div>
+  );
+}
+
+function RuleItem({ text }: { text: string }) {
+  return (
+    <div className="flex items-center gap-2 rounded-2xl bg-slate-900/70 p-4 text-sm font-medium text-slate-200">
+      <CheckCircle2 size={18} className="shrink-0 text-lime-300" />
+      {text}
+    </div>
+  );
+}
