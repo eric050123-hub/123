@@ -26,7 +26,6 @@ export function PublicRegisterForm({ classId }: { classId: string }) {
         experienceLevel: formData.get("gender"),
         needsPaddle: false,
         notes: "",
-        pin: formData.get("phone"),
         consent: formData.get("consent") === "on"
       })
     });
