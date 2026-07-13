@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #f7faf5;
+  color: #183028;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus:ring-4 focus:ring-court/30 focus:border-leaf;
+}
