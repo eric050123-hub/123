@@ -6,7 +6,7 @@ export function Button({
   className,
   variant = "primary",
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "ghost" }) {
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "ghost" | "danger" }) {
   return (
     <button
       className={clsx(
@@ -14,6 +14,7 @@ export function Button({
         variant === "primary" && "bg-leaf text-white hover:bg-ink",
         variant === "secondary" && "border border-leaf/25 bg-white text-leaf hover:bg-mist",
         variant === "ghost" && "text-leaf hover:bg-mist",
+        variant === "danger" && "border border-clay/25 bg-white text-clay hover:bg-clay/10",
         className
       )}
       {...props}
