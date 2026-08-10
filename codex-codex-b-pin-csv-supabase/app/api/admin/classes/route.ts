@@ -83,3 +83,21 @@ export async function PATCH(request: Request) {
     return jsonError(error);
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const user = await requireAdmin();
+    const body = await request.json();
+    const id = String(body.id ?? "");
+    if (!id) throw new Error("缺少班級 ID。");
+
+    const supabase = supabaseAdmin();
+    const { error } = await supabase.from("classes").delete().eq("id", id);
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({ admin_user_id: user.id, action: "delete", entity_type: "classes", entity_id: id });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return jsonError(error);
+  }
+}
