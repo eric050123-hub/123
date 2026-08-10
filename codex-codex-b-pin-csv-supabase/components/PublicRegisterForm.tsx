@@ -36,7 +36,7 @@ export function PublicRegisterForm({ classId }: { classId: string }) {
   }
 
   return (
-    <form action={submit} className="grid gap-6">
+    <form action={submit} className="grid gap-5 sm:gap-6">
       {message ? <div className="rounded-md bg-leaf/10 p-4 font-semibold text-leaf">{message}</div> : null}
       {error ? <ErrorState message={error} /> : null}
       <Field label="真實姓名" hint="前台只會顯示遮蔽姓氏，例如陳○○。">
@@ -60,7 +60,7 @@ export function PublicRegisterForm({ classId }: { classId: string }) {
         <Input name="partySize" type="number" min="1" max="8" defaultValue="1" required className="rounded-[22px] px-5 py-4 text-lg sm:px-6 sm:py-5 sm:text-xl" />
       </Field>
       <Checkbox name="consent" required label="我同意個人資料僅供寶亮生活學苑聯絡與開班使用，不會公開顯示。" />
-      <Button disabled={pending} className="rounded-[28px] bg-ink py-5 text-2xl">{pending ? "送出中..." : "送出報名"}</Button>
+      <Button disabled={pending} className="rounded-[24px] bg-ink py-4 text-xl sm:rounded-[28px] sm:py-5 sm:text-2xl">{pending ? "送出中..." : "送出報名"}</Button>
     </form>
   );
 }
