@@ -5,24 +5,51 @@ import { LinkButton, StatusBadge } from "@/components/ui";
 import { weekdayLabel } from "@/lib/constants";
 import { requireAdmin } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase";
-import type { CourseType } from "@/lib/types";
+import type { AdminClass, CourseType } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminClassesPage() {
+type ClassRow = AdminClass & {
+  course_types?: { name: string } | null;
+  registrations?: { status: string; party_size: number }[];
+};
+
+export default async function AdminClassesPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   await requireAdmin();
+  const params = await searchParams;
   const supabase = supabaseAdmin();
   const [{ data: classes }, { data: courseTypes }] = await Promise.all([
-    supabase.from("public_class_summaries").select("*").order("weekday"),
+    supabase
+      .from("classes")
+      .select("*, course_types(name), registrations(status, party_size)")
+      .order("weekday")
+      .order("start_time"),
     supabase.from("course_types").select("*").order("sort_order")
   ]);
+  const rows = ((classes ?? []) as ClassRow[]).map((item) => ({
+    ...item,
+    course_name: item.course_types?.name ?? "",
+    start_time: String(item.start_time).slice(0, 5),
+    end_time: String(item.end_time).slice(0, 5),
+    active_count: (item.registrations ?? [])
+      .filter((r) => ["active", "confirmed"].includes(r.status))
+      .reduce((sum, r) => sum + Number(r.party_size ?? 0), 0),
+    seats_left: Math.max(
+      item.maximum_students -
+        (item.registrations ?? [])
+          .filter((r) => ["active", "confirmed"].includes(r.status))
+          .reduce((sum, r) => sum + Number(r.party_size ?? 0), 0),
+      0
+    )
+  })) as AdminClass[];
+  const editingClass = rows.find((item) => item.id === params.edit) ?? null;
 
   return (
     <div className="min-h-screen bg-mist">
       <AdminNav />
       <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8">
         <h1 className="text-3xl font-black">班級管理</h1>
-        <AdminClassForm courseTypes={(courseTypes ?? []) as CourseType[]} />
+        <AdminClassForm key={editingClass?.id ?? "new"} courseTypes={(courseTypes ?? []) as CourseType[]} editingClass={editingClass} />
         <section className="rounded-md bg-white p-5 shadow-soft">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black">班級列表</h2>
@@ -32,14 +59,14 @@ export default async function AdminClassesPage() {
             <table className="w-full min-w-[900px] text-left">
               <thead><tr className="border-b"><Th>班級</Th><Th>星期</Th><Th>時間</Th><Th>人數</Th><Th>狀態</Th><Th>操作</Th></tr></thead>
               <tbody>
-                {(classes ?? []).length ? (classes ?? []).map((c) => (
+                {rows.length ? rows.map((c) => (
                   <tr key={c.id} className="border-b border-ink/10">
                     <Td><b>{c.title}</b><br /><span className="text-sm text-ink/60">{c.course_name}</span></Td>
                     <Td>{weekdayLabel(c.weekday)}</Td>
                     <Td>{c.start_time}-{c.end_time}</Td>
                     <Td>{c.active_count}/{c.maximum_students}</Td>
                     <Td><StatusBadge status={c.status} /></Td>
-                    <Td><div className="flex flex-wrap gap-2"><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="closed" label="暫停招生" /><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="recruiting" label="恢復招生" /><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="confirmed" label="正式開班" variant="primary" /></div></Td>
+                    <Td><div className="flex flex-wrap gap-2"><LinkButton href={`/admin/classes?edit=${c.id}`} variant="secondary">修改</LinkButton><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="closed" label="暫停招生" /><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="recruiting" label="恢復招生" /><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="confirmed" label="正式開班" variant="primary" /></div></Td>
                   </tr>
                 )) : (
                   <tr><Td colSpan={6}>目前沒有班級。請先用上方表單新增一個班級。</Td></tr>
