@@ -1,4 +1,5 @@
 import { AdminClassForm } from "@/components/AdminClassForm";
+import { AdminDeleteClassButton } from "@/components/AdminDeleteClassButton";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminStatusButton } from "@/components/AdminStatusButton";
 import { LinkButton, StatusBadge } from "@/components/ui";
@@ -14,6 +15,17 @@ type ClassRow = AdminClass & {
   registrations?: { status: string; party_size: number }[];
 };
 
+const STATUS_ORDER: Record<string, number> = {
+  recruiting: 1,
+  threshold_reached: 2,
+  confirmed: 3,
+  full: 4,
+  draft: 5,
+  closed: 8,
+  completed: 9,
+  cancelled: 10
+};
+
 export default async function AdminClassesPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   await requireAdmin();
   const params = await searchParams;
@@ -26,22 +38,27 @@ export default async function AdminClassesPage({ searchParams }: { searchParams:
       .order("start_time"),
     supabase.from("course_types").select("*").order("sort_order")
   ]);
-  const rows = ((classes ?? []) as ClassRow[]).map((item) => ({
-    ...item,
-    course_name: item.course_types?.name ?? "",
-    start_time: String(item.start_time).slice(0, 5),
-    end_time: String(item.end_time).slice(0, 5),
-    active_count: (item.registrations ?? [])
-      .filter((r) => ["active", "confirmed"].includes(r.status))
-      .reduce((sum, r) => sum + Number(r.party_size ?? 0), 0),
-    seats_left: Math.max(
-      item.maximum_students -
-        (item.registrations ?? [])
-          .filter((r) => ["active", "confirmed"].includes(r.status))
-          .reduce((sum, r) => sum + Number(r.party_size ?? 0), 0),
-      0
-    )
-  })) as AdminClass[];
+  const rows = ((classes ?? []) as ClassRow[])
+    .map((item) => {
+      const activeCount = (item.registrations ?? [])
+        .filter((r) => ["active", "confirmed"].includes(r.status))
+        .reduce((sum, r) => sum + Number(r.party_size ?? 0), 0);
+
+      return {
+        ...item,
+        course_name: item.course_types?.name ?? "",
+        start_time: String(item.start_time).slice(0, 5),
+        end_time: String(item.end_time).slice(0, 5),
+        active_count: activeCount,
+        seats_left: Math.max(item.maximum_students - activeCount, 0)
+      };
+    })
+    .sort((a, b) => {
+      const statusSort = (STATUS_ORDER[a.status] ?? 6) - (STATUS_ORDER[b.status] ?? 6);
+      if (statusSort !== 0) return statusSort;
+      if (a.weekday !== b.weekday) return a.weekday - b.weekday;
+      return String(a.start_time).localeCompare(String(b.start_time));
+    }) as AdminClass[];
   const editingClass = rows.find((item) => item.id === params.edit) ?? null;
 
   return (
@@ -66,7 +83,15 @@ export default async function AdminClassesPage({ searchParams }: { searchParams:
                     <Td>{c.start_time}-{c.end_time}</Td>
                     <Td>{c.active_count}/{c.maximum_students}</Td>
                     <Td><StatusBadge status={c.status} /></Td>
-                    <Td><div className="flex flex-wrap gap-2"><LinkButton href={`/admin/classes?edit=${c.id}`} variant="secondary">修改</LinkButton><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="closed" label="暫停招生" /><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="recruiting" label="恢復招生" /><AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="confirmed" label="正式開班" variant="primary" /></div></Td>
+                    <Td>
+                      <div className="flex flex-wrap gap-2">
+                        <LinkButton href={`/admin/classes?edit=${c.id}`} variant="secondary">修改</LinkButton>
+                        <AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="closed" label="暫停招生" />
+                        <AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="recruiting" label="恢復招生" />
+                        <AdminStatusButton endpoint="/api/admin/classes" id={c.id} status="confirmed" label="正式開班" variant="primary" />
+                        <AdminDeleteClassButton id={c.id} title={c.title} />
+                      </div>
+                    </Td>
                   </tr>
                 )) : (
                   <tr><Td colSpan={6}>目前沒有班級。請先用上方表單新增一個班級。</Td></tr>
