@@ -17,18 +17,25 @@ export const PERIODS = [
 export const TIME_SLOTS = {
   morning: [
     { start: "08:00", end: "10:00", label: "08:00-10:00" },
+    { start: "08:30", end: "10:30", label: "08:30-10:30" },
     { start: "09:00", end: "11:00", label: "09:00-11:00" },
+    { start: "09:30", end: "11:30", label: "09:30-11:30" },
     { start: "10:00", end: "12:00", label: "10:00-12:00" }
   ],
   afternoon: [
     { start: "14:00", end: "16:00", label: "14:00-16:00" },
+    { start: "14:30", end: "16:30", label: "14:30-16:30" },
     { start: "15:00", end: "17:00", label: "15:00-17:00" },
+    { start: "15:30", end: "17:30", label: "15:30-17:30" },
     { start: "16:00", end: "18:00", label: "16:00-18:00" }
   ],
   evening: [
     { start: "18:00", end: "20:00", label: "18:00-20:00" },
+    { start: "18:30", end: "20:30", label: "18:30-20:30" },
     { start: "19:00", end: "21:00", label: "19:00-21:00" },
-    { start: "20:00", end: "22:00", label: "20:00-22:00" }
+    { start: "19:30", end: "21:30", label: "19:30-21:30" },
+    { start: "20:00", end: "22:00", label: "20:00-22:00" },
+    { start: "20:30", end: "22:30", label: "20:30-22:30" }
   ]
 } as const;
 
