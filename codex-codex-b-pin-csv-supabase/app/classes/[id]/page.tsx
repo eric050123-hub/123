@@ -7,6 +7,7 @@ import { supabasePublic } from "@/lib/supabase";
 import type { PublicClass, PublicRegistrationName } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+const URL_PATTERN = /(https?:\/\/[^\s]+)/g;
 
 export default async function ClassDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -113,7 +114,39 @@ export default async function ClassDetail({ params }: { params: Promise<{ id: st
 }
 
 function Info({ label, value }: { label: string; value: string }) {
-  return <div className="mb-5 last:mb-0"><dt className="text-base font-black text-ink/35 sm:text-lg">{label}</dt><dd className="mt-2 break-words text-lg font-bold leading-relaxed sm:text-xl">{value}</dd></div>;
+  return (
+    <div className="mb-5 last:mb-0">
+      <dt className="text-base font-black text-ink/35 sm:text-lg">{label}</dt>
+      <dd className="mt-2 break-words text-lg font-bold leading-relaxed sm:text-xl">
+        {label === "備註" ? <RichText text={value} /> : value}
+      </dd>
+    </div>
+  );
+}
+
+function RichText({ text }: { text: string }) {
+  return (
+    <div className="grid gap-2 whitespace-pre-wrap break-words">
+      {text.split(/\n/).map((line, lineIndex) => (
+        <p key={`${line}-${lineIndex}`}>
+          {line.split(URL_PATTERN).map((part, partIndex) => {
+            if (!part.match(URL_PATTERN)) return <span key={`${part}-${partIndex}`}>{part}</span>;
+            return (
+              <a
+                key={`${part}-${partIndex}`}
+                href={part}
+                target="_blank"
+                rel="noreferrer"
+                className="text-leaf underline underline-offset-4"
+              >
+                {part}
+              </a>
+            );
+          })}
+        </p>
+      ))}
+    </div>
+  );
 }
 
 function BigInfo({ label, value }: { label: string; value: string }) {
