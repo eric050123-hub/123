@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PERIODS, TIME_SLOTS, WEEKDAYS } from "@/lib/constants";
+import { PERIODS, WEEKDAYS } from "@/lib/constants";
 import type { AdminClass, CourseType } from "@/lib/types";
 import { Button, Checkbox, Field, Input, Select, Textarea } from "@/components/ui";
 
@@ -13,7 +13,6 @@ export function AdminClassForm({ courseTypes, editingClass }: { courseTypes: Cou
   const isEditing = Boolean(editingClass);
 
   async function submit(formData: FormData) {
-    const slot = String(formData.get("slot")).split("|");
     const res = await fetch("/api/admin/classes", {
       method: isEditing ? "PATCH" : "POST",
       headers: { "content-type": "application/json" },
@@ -24,8 +23,8 @@ export function AdminClassForm({ courseTypes, editingClass }: { courseTypes: Cou
         description: formData.get("description"),
         weekday: formData.get("weekday"),
         period,
-        startTime: slot[0],
-        endTime: slot[1],
+        startTime: formData.get("startTime"),
+        endTime: formData.get("endTime"),
         location: formData.get("location"),
         coachName: formData.get("coachName"),
         price: formData.get("price"),
@@ -53,7 +52,12 @@ export function AdminClassForm({ courseTypes, editingClass }: { courseTypes: Cou
       <Field label="班級名稱"><Input name="title" required defaultValue={editingClass?.title ?? ""} /></Field>
       <Field label="星期"><Select name="weekday" defaultValue={editingClass?.weekday}>{WEEKDAYS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}</Select></Field>
       <Field label="時段區間"><Select value={period} onChange={(e) => setPeriod(e.target.value as typeof period)}>{PERIODS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}</Select></Field>
-      <Field label="時段"><Select name="slot" defaultValue={editingClass ? `${editingClass.start_time}|${editingClass.end_time}` : undefined}>{TIME_SLOTS[period].map((s) => <option key={s.label} value={`${s.start}|${s.end}`}>{s.label}</option>)}</Select></Field>
+      <Field label="開始時間" hint="可自行輸入，例如 18:30。">
+        <Input name="startTime" type="time" required step="60" defaultValue={editingClass?.start_time?.slice(0, 5) ?? "18:30"} />
+      </Field>
+      <Field label="結束時間" hint="可自行輸入，例如 20:30。">
+        <Input name="endTime" type="time" required step="60" defaultValue={editingClass?.end_time?.slice(0, 5) ?? "20:30"} />
+      </Field>
       <Field label="場地"><Input name="location" required defaultValue={editingClass?.location ?? ""} /></Field>
       <Field label="教練"><Input name="coachName" defaultValue={editingClass?.coach_name ?? ""} /></Field>
       <Field label="費用"><Input name="price" type="number" defaultValue={editingClass?.price ?? 0} /></Field>
