@@ -5,6 +5,7 @@ const taiwanPhone = z
   .string()
   .regex(/^09\d{8}$/, "請輸入 09 開頭共 10 碼的台灣手機號碼");
 const pin = z.string().regex(/^\d{4,8}$/, "PIN 必須是 4 到 8 位數字");
+const timeText = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "請輸入正確時間，例如 18:30");
 
 export const registrationSchema = z.object({
   classId: z.string().uuid(),
@@ -25,8 +26,8 @@ export const proposalSchema = z.object({
   courseTypeId: z.string().uuid(),
   weekday: z.coerce.number().min(1).max(7),
   period: z.enum(["morning", "afternoon", "evening"]),
-  startTime: z.string(),
-  endTime: z.string(),
+  startTime: timeText,
+  endTime: timeText,
   alternativeSlots: z.array(z.string()).default([]),
   applicantName: z.string().min(2, "請輸入真實姓名"),
   lineName: z.string().min(1, "請輸入 LINE 顯示名稱"),
@@ -64,8 +65,8 @@ export const adminClassSchema = z.object({
   description: z.string().optional().or(z.literal("")),
   weekday: z.coerce.number().min(1).max(7),
   period: z.enum(["morning", "afternoon", "evening"]),
-  startTime: z.string(),
-  endTime: z.string(),
+  startTime: timeText,
+  endTime: timeText,
   location: z.string().min(1),
   coachName: z.string().optional().or(z.literal("")),
   price: z.coerce.number().min(0).optional(),
