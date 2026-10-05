@@ -12,7 +12,7 @@ export function DemoRegisterForm({ classId }: { classId: string }) {
       classId,
       fullName: formData.get("fullName"),
       lineName: formData.get("fullName"),
-      partySize: formData.get("partySize"),
+      partySize: 1,
       phone: formData.get("phone"),
       ageGroup: formData.get("age"),
       experienceLevel: formData.get("gender"),
@@ -41,9 +41,6 @@ export function DemoRegisterForm({ classId }: { classId: string }) {
           <option value="女">女</option>
           <option value="不透露">不透露</option>
         </select>
-      </Field>
-      <Field label="報名人數">
-        <Input name="partySize" type="number" min="1" max="8" defaultValue="1" required className="rounded-[22px] px-6 py-5 text-xl" />
       </Field>
       <Checkbox name="consent" required label="我同意個人資料僅供寶亮生活學苑聯絡與開班使用，不會公開顯示。" />
       <Button className="rounded-[28px] bg-ink py-5 text-2xl">送出預覽報名</Button>

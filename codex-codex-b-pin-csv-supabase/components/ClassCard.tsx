@@ -1,13 +1,20 @@
 import { weekdayLabel } from "@/lib/constants";
 import type { PublicClass } from "@/lib/types";
 import { LinkButton, ProgressBar, StatusBadge } from "@/components/ui";
+import { clsx } from "@/lib/utils";
+
+const accentClasses = {
+  green: "border-emerald-200",
+  blue: "border-sky-200",
+  pink: "border-pink-200"
+};
 
 export function ClassCard({ item }: { item: PublicClass }) {
   const openingTarget = Math.max(item.minimum_students, 1);
   const openingProgress = (item.active_count / openingTarget) * 100;
   const remaining = Math.max(item.maximum_students - item.active_count, 0);
   return (
-    <article className="rounded-[24px] bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-6">
+    <article className={clsx("rounded-[24px] border-2 bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-6", accentClasses[item.accent_color ?? "green"])}>
       <div className="grid gap-3 sm:flex sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="text-2xl font-black leading-tight tracking-normal sm:text-3xl">{item.title}</h2>

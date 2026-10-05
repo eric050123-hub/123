@@ -26,6 +26,8 @@ export async function POST(request: Request) {
         maximum_students: parsed.maximumStudents,
         registration_deadline: cleanOptional(parsed.registrationDeadline),
         status: parsed.status,
+        display_order: parsed.displayOrder,
+        accent_color: parsed.accentColor,
         is_public: parsed.isPublic,
         admin_notes: cleanOptional(parsed.adminNotes)
       })
@@ -70,6 +72,8 @@ export async function PATCH(request: Request) {
           maximum_students: parsed.maximumStudents,
           registration_deadline: cleanOptional(parsed.registrationDeadline),
           status: parsed.status,
+          display_order: parsed.displayOrder,
+          accent_color: parsed.accentColor,
           is_public: parsed.isPublic,
           admin_notes: cleanOptional(parsed.adminNotes)
         })

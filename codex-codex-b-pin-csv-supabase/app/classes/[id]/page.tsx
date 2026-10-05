@@ -5,9 +5,15 @@ import { demoClasses, demoMaskedRegistrations } from "@/lib/demo-data";
 import { hasSupabaseEnv } from "@/lib/env";
 import { supabasePublic } from "@/lib/supabase";
 import type { PublicClass, PublicRegistrationName } from "@/lib/types";
+import { clsx } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 const URL_PATTERN = /(https?:\/\/[^\s]+)/g;
+const accentClasses = {
+  green: "border-emerald-200",
+  blue: "border-sky-200",
+  pink: "border-pink-200"
+};
 
 export default async function ClassDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -36,7 +42,7 @@ export default async function ClassDetail({ params }: { params: Promise<{ id: st
       <div className="mx-auto max-w-3xl">
         <LinkButton href="/" variant="ghost">← 回首頁</LinkButton>
       </div>
-      <section className="mx-auto mt-4 max-w-3xl rounded-[24px] bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-7">
+      <section className={clsx("mx-auto mt-4 max-w-3xl rounded-[24px] border-2 bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-7", accentClasses[item.accent_color ?? "green"])}>
         <div className="grid gap-3 sm:flex sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h1 className="text-3xl font-black leading-tight tracking-normal sm:text-5xl">{item.title}</h1>

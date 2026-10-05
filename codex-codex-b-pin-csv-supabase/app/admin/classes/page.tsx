@@ -54,6 +54,8 @@ export default async function AdminClassesPage({ searchParams }: { searchParams:
       };
     })
     .sort((a, b) => {
+      const orderSort = Number(a.display_order ?? 1000) - Number(b.display_order ?? 1000);
+      if (orderSort !== 0) return orderSort;
       const statusSort = (STATUS_ORDER[a.status] ?? 6) - (STATUS_ORDER[b.status] ?? 6);
       if (statusSort !== 0) return statusSort;
       if (a.weekday !== b.weekday) return a.weekday - b.weekday;
@@ -73,11 +75,12 @@ export default async function AdminClassesPage({ searchParams }: { searchParams:
             <LinkButton href="/api/admin/registrations" variant="secondary">匯出全部 CSV</LinkButton>
           </div>
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[900px] text-left">
-              <thead><tr className="border-b"><Th>班級</Th><Th>星期</Th><Th>時間</Th><Th>人數</Th><Th>狀態</Th><Th>操作</Th></tr></thead>
+            <table className="w-full min-w-[980px] text-left">
+              <thead><tr className="border-b"><Th>排序</Th><Th>班級</Th><Th>星期</Th><Th>時間</Th><Th>人數</Th><Th>狀態</Th><Th>操作</Th></tr></thead>
               <tbody>
                 {rows.length ? rows.map((c) => (
                   <tr key={c.id} className="border-b border-ink/10">
+                    <Td>{c.display_order ?? 1000}</Td>
                     <Td><b>{c.title}</b><br /><span className="text-sm text-ink/60">{c.course_name}</span></Td>
                     <Td>{weekdayLabel(c.weekday)}</Td>
                     <Td>{c.start_time}-{c.end_time}</Td>
@@ -94,7 +97,7 @@ export default async function AdminClassesPage({ searchParams }: { searchParams:
                     </Td>
                   </tr>
                 )) : (
-                  <tr><Td colSpan={6}>目前沒有班級。請先用上方表單新增一個班級。</Td></tr>
+                  <tr><Td colSpan={7}>目前沒有班級。請先用上方表單新增一個班級。</Td></tr>
                 )}
               </tbody>
             </table>

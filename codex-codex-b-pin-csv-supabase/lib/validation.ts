@@ -73,6 +73,8 @@ export const adminClassSchema = z.object({
   maximumStudents: z.coerce.number().min(1),
   registrationDeadline: z.string().optional().or(z.literal("")),
   status: z.string(),
+  displayOrder: z.coerce.number().int().min(0).default(1000),
+  accentColor: z.enum(["green", "blue", "pink"]).default("green"),
   isPublic: z.boolean().default(true),
   adminNotes: z.string().optional().or(z.literal(""))
 });

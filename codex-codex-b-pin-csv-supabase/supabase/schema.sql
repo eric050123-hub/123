@@ -56,12 +56,28 @@ create table if not exists public.classes (
   maximum_students integer not null default 8 check (maximum_students >= minimum_students),
   registration_deadline date,
   status text not null default 'draft' check (status in ('draft','recruiting','threshold_reached','confirmed','full','closed','completed','cancelled')),
+  display_order integer not null default 1000,
+  accent_color text not null default 'green' check (accent_color in ('green','blue','pink')),
   is_public boolean not null default false,
   admin_notes text,
   created_from_proposal_id uuid references public.class_proposals(id),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.classes add column if not exists display_order integer not null default 1000;
+alter table public.classes add column if not exists accent_color text not null default 'green';
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'classes_accent_color_check'
+  ) then
+    alter table public.classes
+      add constraint classes_accent_color_check
+      check (accent_color in ('green','blue','pink'));
+  end if;
+end $$;
 
 do $$
 begin
@@ -141,6 +157,8 @@ select
   c.maximum_students,
   c.registration_deadline,
   c.status,
+  c.display_order,
+  c.accent_color,
   coalesce(sum(r.party_size) filter (where r.status in ('active','confirmed')), 0)::int as active_count,
   greatest(c.maximum_students - coalesce(sum(r.party_size) filter (where r.status in ('active','confirmed')), 0), 0)::int as seats_left,
   c.created_at

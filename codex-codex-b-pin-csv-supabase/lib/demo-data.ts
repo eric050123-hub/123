@@ -18,6 +18,8 @@ export const demoClasses: PublicClass[] = [
     maximum_students: 8,
     registration_deadline: null,
     status: "threshold_reached",
+    display_order: 1,
+    accent_color: "green",
     active_count: 6,
     seats_left: 2,
     created_at: new Date().toISOString()
@@ -39,6 +41,8 @@ export const demoClasses: PublicClass[] = [
     maximum_students: 16,
     registration_deadline: null,
     status: "threshold_reached",
+    display_order: 2,
+    accent_color: "blue",
     active_count: 10,
     seats_left: 6,
     created_at: new Date().toISOString()

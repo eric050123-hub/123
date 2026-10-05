@@ -33,6 +33,8 @@ export function AdminClassForm({ courseTypes, editingClass }: { courseTypes: Cou
         maximumStudents: formData.get("maximumStudents"),
         registrationDeadline: formData.get("registrationDeadline"),
         status: formData.get("status"),
+        displayOrder: formData.get("displayOrder"),
+        accentColor: formData.get("accentColor"),
         isPublic: formData.get("isPublic") === "on",
         adminNotes: formData.get("adminNotes")
       })
@@ -57,6 +59,16 @@ export function AdminClassForm({ courseTypes, editingClass }: { courseTypes: Cou
       <Field label="費用"><Input name="price" type="number" defaultValue={editingClass?.price ?? 0} /></Field>
       <Field label="最低開班人數"><Input name="minimumStudents" type="number" defaultValue={editingClass?.minimum_students ?? 4} /></Field>
       <Field label="最高人數"><Input name="maximumStudents" type="number" defaultValue={editingClass?.maximum_students ?? 8} /></Field>
+      <Field label="前台排序" hint="數字越小越前面，例如 1、2、3。">
+        <Input name="displayOrder" type="number" min="0" defaultValue={editingClass?.display_order ?? 1000} />
+      </Field>
+      <Field label="外框顏色">
+        <Select name="accentColor" defaultValue={editingClass?.accent_color ?? "green"}>
+          <option value="green">綠色</option>
+          <option value="blue">藍色</option>
+          <option value="pink">粉色</option>
+        </Select>
+      </Field>
       <Field label="招生截止日"><Input name="registrationDeadline" type="date" defaultValue={editingClass?.registration_deadline ?? ""} /></Field>
       <Field label="狀態">
         <Select name="status" defaultValue={editingClass?.status ?? "recruiting"}>

@@ -16,7 +16,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
     let query = supabase.from("public_class_summaries").select("*").order("weekday").order("start_time");
     if (params.weekday) query = query.eq("weekday", Number(params.weekday));
     const classResult = await query;
-    classes = (classResult.data ?? []) as PublicClass[];
+    classes = ((classResult.data ?? []) as PublicClass[]).sort(sortPublicClasses);
   } else {
     classes = demoClasses;
   }
@@ -28,7 +28,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
           <p className="text-xs font-black tracking-[0.28em] text-ink/35 sm:text-sm sm:tracking-[0.45em]">BAOLIANG LIFE ACADEMY</p>
           <h1 className="mt-4 text-3xl font-black leading-tight tracking-normal sm:mt-5 sm:text-5xl">寶亮匹克球預開班</h1>
           <p className="mt-3 text-base font-semibold leading-relaxed text-ink/55 sm:mt-4 sm:text-xl">
-            選好想上的課程，填寫姓名、手機與人數即可登記。
+            選好想上的課程，填寫姓名、手機、年齡與性別即可登記。
           </p>
         </div>
       </section>
@@ -48,4 +48,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
       </section>
     </main>
   );
+}
+
+function sortPublicClasses(a: PublicClass, b: PublicClass) {
+  const orderSort = Number(a.display_order ?? 1000) - Number(b.display_order ?? 1000);
+  if (orderSort !== 0) return orderSort;
+  if (a.weekday !== b.weekday) return a.weekday - b.weekday;
+  return String(a.start_time).localeCompare(String(b.start_time));
 }

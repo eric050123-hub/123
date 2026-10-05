@@ -10,6 +10,7 @@ export type ClassStatus =
 
 export type ProposalStatus = "pending" | "approved" | "merged" | "rejected" | "cancelled";
 export type RegistrationStatus = "active" | "cancelled" | "confirmed" | "locked";
+export type AccentColor = "green" | "blue" | "pink";
 
 export type PublicClass = {
   id: string;
@@ -28,6 +29,8 @@ export type PublicClass = {
   maximum_students: number;
   registration_deadline: string | null;
   status: ClassStatus;
+  display_order: number;
+  accent_color: AccentColor;
   active_count: number;
   seats_left: number;
   created_at: string;
